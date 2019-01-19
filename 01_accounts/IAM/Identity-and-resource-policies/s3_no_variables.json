@@ -5,7 +5,7 @@
       "Action": ["s3:ListBucket"],
       "Effect": "Allow",
       "Resource": ["arn:aws:s3:::la-homefolders-bucket"],
-      "Condition": {"StringLike": {"s3:prefix": ["acantril/*"]}}
+      "Condition": {"StringLike": {"s3:prefix": ["testuser/*"]}}
     },
     {
       "Action": [
@@ -13,7 +13,7 @@
         "s3:PutObject"
       ],
       "Effect": "Allow",
-      "Resource": ["arn:aws:s3:::mybucket/acantril/*"]
+      "Resource": ["arn:aws:s3:::la-homefolders-bucket/testuser/*"]
     }
   ]
 }

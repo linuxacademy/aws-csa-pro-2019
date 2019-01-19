@@ -6,12 +6,7 @@
          "Action":[
             "s3:ListAllMyBuckets"
          ],
-         "Resource":"arn:aws:s3:::*",
-         "Condition": {
-            "DateGreaterThan" : {
-               "aws:CurrentTime" : "2019-01-17T01:00:00Z"
-             }
-          }
+         "Resource":"arn:aws:s3:::*"
       },
       {
          "Effect":"Allow",
@@ -19,7 +14,7 @@
             "s3:ListBucket",
             "s3:GetBucketLocation"
          ],
-         "Resource":"arn:aws:s3:::examplebucket"
+         "Resource":"arn:aws:s3:::la-homefolders-bucket"
       },
       {
          "Effect":"Allow",
@@ -30,7 +25,7 @@
             "s3:GetObjectAcl",
             "s3:DeleteObject"
          ],
-         "Resource":"arn:aws:s3:::examplebucket/*"
+         "Resource":"arn:aws:s3:::la-homefolders-bucket/*"
       }
    ]
 }

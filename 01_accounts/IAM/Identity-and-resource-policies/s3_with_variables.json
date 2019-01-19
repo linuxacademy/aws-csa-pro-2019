@@ -13,7 +13,7 @@
         "s3:PutObject"
       ],
       "Effect": "Allow",
-      "Resource": ["arn:aws:s3:::mybucket/${aws:username}/*"]
+      "Resource": ["arn:aws:s3:::la-homefolders-bucket/${aws:username}/*"]
     }
   ]
 }
