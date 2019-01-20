@@ -1,0 +1,46 @@
+{
+    "Resources" : {
+        "vpc2" : {
+            "Type" : "AWS::EC2::VPC",
+            "Properties" : { 
+                "CidrBlock" : "192.168.0.0/16",
+                "EnableDnsSupport" : true,
+                "EnableDnsHostnames" : true,
+                "InstanceTenancy" : "default",
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc2"} ]
+            }
+        },
+        "vpc2snA1" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc2"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc2_sn_A1"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "0",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "192.168.10.0/24"
+            }
+        },
+        "vpc2snA2" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc2"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc2_sn_A2"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "0",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "192.168.11.0/24"
+            }
+        }
+    }
+}

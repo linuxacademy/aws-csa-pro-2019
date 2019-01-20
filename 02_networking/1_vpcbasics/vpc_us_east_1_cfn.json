@@ -1,0 +1,248 @@
+{
+    "Resources" : {
+        "vpc1" : {
+            "Type" : "AWS::EC2::VPC",
+            "Properties" : { 
+                "CidrBlock" : "10.10.0.0/16",
+                "EnableDnsSupport" : true,
+                "EnableDnsHostnames" : true,
+                "InstanceTenancy" : "default",
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1"} ]
+            }
+        },
+        "vpc3" : {
+            "Type" : "AWS::EC2::VPC",
+            "Properties" : { 
+                "CidrBlock" : "10.11.0.0/16",
+                "EnableDnsSupport" : true,
+                "EnableDnsHostnames" : true,
+                "InstanceTenancy" : "default",
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc3"} ]
+            }
+        },
+        "vpc1snA1" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_A1"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "0",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.0.0/20"
+            }
+        },
+        "vpc1snA2" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_A2"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "0",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.64.0/20"
+            }
+        },
+        "vpc1snA3" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_A3"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "0",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.128.0/20"
+            }
+        },
+        "vpc1snA4" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_A4"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "0",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.192.0/20"
+            }
+        },
+        "vpc1snB1" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_B1"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "1",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.16.0/20"
+            }
+        },
+        "vpc1snB2" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_B2"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "1",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.80.0/20"
+            }
+        },
+        "vpc1snB3" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_B3"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "1",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.144.0/20"
+            }
+        },
+        "vpc1snB4" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_B4"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "1",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.208.0/20"
+            }
+        },
+        "vpc1snC1" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_C1"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "2",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.32.0/20"
+            }
+        },
+        "vpc1snC2" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_C2"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "2",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.96.0/20"
+            }
+        },
+        "vpc1snC3" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_C3"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "2",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.160.0/20"
+            }
+        },
+        "vpc1snC4" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_C4"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "2",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.224.0/20"
+            }
+        },
+        "vpc3snA1" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc3"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc3_sn_A1"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "0",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.11.0.0/20"
+            }
+        },
+        "vpc3snA2" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc3"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc3_sn_A2"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "0",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.11.16.0/20"
+            }
+        }
+    }
+}
