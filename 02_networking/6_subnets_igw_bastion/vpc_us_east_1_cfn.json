@@ -339,7 +339,7 @@
         "sginternalselfref" : {
             "Type": "AWS::EC2::SecurityGroupIngress",
             "Properties": {
-                "GroupName": {
+                "GroupId": {
                     "Ref": "sginternal"
                 },
                 "IpProtocol": -1,
