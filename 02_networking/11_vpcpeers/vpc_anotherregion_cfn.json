@@ -1,0 +1,80 @@
+{
+    "Parameters" : {
+        "KeyName": {
+            "Description" : "Name of an existing EC2 KeyPair - YOU NEED TO CREATE THIS IN EC2->Network&Security->Key Pairs",
+            "Type": "AWS::EC2::KeyPair::KeyName"
+        },
+        "LatestAmiId" : {
+            "Type" : "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+            "Default" : "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+        }
+    },
+    "Resources" : {
+        "vpc2" : {
+            "Type" : "AWS::EC2::VPC",
+            "Properties" : { 
+                "CidrBlock" : "192.168.0.0/16",
+                "EnableDnsSupport" : true,
+                "EnableDnsHostnames" : true,
+                "InstanceTenancy" : "default",
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc2"} ]
+            }
+        },
+        "vpc2snA1" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc2"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc2_sn_A1"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "0",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "192.168.10.0/24"
+            }
+        },
+        "vpc2snA2" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc2"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc2_sn_A2"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "0",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "192.168.11.0/24"
+            }
+        },
+        "sginternal" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupName" : "SG-INTERNAL",
+                "GroupDescription" : "SG-INTERNAL",
+                "Tags" :  [ {"Key" : "Name", "Value" : "SG-INTERNAL"} ],
+                "VpcId" : {"Ref" : "vpc2"}
+            }
+        },
+        "ec28" : {
+            "Type" : "AWS::EC2::Instance",
+            "Properties" : {
+                "InstanceType" : "t2.nano",
+                "ImageId" : {"Ref" : "LatestAmiId"},
+                "KeyName" : {"Ref" : "KeyName"},
+                "NetworkInterfaces" : [ {
+                    "AssociatePublicIpAddress": "false",
+                    "DeviceIndex": "0",
+                    "GroupSet": [{ "Ref" : "sginternal" }],
+                    "SubnetId": { "Ref" : "vpc2snA2" }
+                }],
+                "Tags" : [ {"Key" : "Name", "Value" : "EC2-8"} ]
+            }
+        }
+    }
+}

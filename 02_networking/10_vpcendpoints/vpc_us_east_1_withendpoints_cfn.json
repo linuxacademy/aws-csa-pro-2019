@@ -350,66 +350,12 @@
                 }
             }
         },
-        "eipa" : {
-            "Type" : "AWS::EC2::EIP",
-            "DependsOn" : "igwvpc1attachment",
-            "Properties" : {
-              "Domain" : "vpc"
-            }
-        },
-        "natgwa" : {
-            "Type" : "AWS::EC2::NatGateway",
-            "Properties" : {
-              "AllocationId" : { "Fn::GetAtt" : ["eipa", "AllocationId"]},
-              "SubnetId" : {"Ref" : "vpc1snA1" },
-              "Tags" : [ {"Key" : "Name", "Value" : "NATGWA"} ]
-            }
-        },
-        "eipb" : {
-            "Type" : "AWS::EC2::EIP",
-            "DependsOn" : "igwvpc1attachment",
-            "Properties" : {
-              "Domain" : "vpc"
-            }
-        },
-        "natgwb" : {
-            "Type" : "AWS::EC2::NatGateway",
-            "Properties" : {
-              "AllocationId" : { "Fn::GetAtt" : ["eipb", "AllocationId"]},
-              "SubnetId" : {"Ref" : "vpc1snB1" },
-              "Tags" : [ {"Key" : "Name", "Value" : "NATGWB"} ]
-            }
-        },
-        "eipc" : {
-            "Type" : "AWS::EC2::EIP",
-            "DependsOn" : "igwvpc1attachment",
-            "Properties" : {
-              "Domain" : "vpc"
-            }
-        },
-        "natgwc" : {
-            "Type" : "AWS::EC2::NatGateway",
-            "Properties" : {
-              "AllocationId" : { "Fn::GetAtt" : ["eipc", "AllocationId"]},
-              "SubnetId" : {"Ref" : "vpc1snC1" },
-              "Tags" : [ {"Key" : "Name", "Value" : "NATGWC"} ]
-            }
-        },
         "rtprivatea" : {
             "Type" : "AWS::EC2::RouteTable",
             "Properties" : {
                "VpcId" : {"Ref" : "vpc1"},
                "Tags" : [  {"Key" : "Name", "Value" : "RT-PrivateA"} ]
             }  
-        },
-        "rtprivateadefault" : {
-            "Type" : "AWS::EC2::Route",
-            "DependsOn" : "igwvpc1",
-            "Properties" : {
-               "RouteTableId" : { "Ref" : "rtprivatea" },
-               "DestinationCidrBlock" : "0.0.0.0/0",
-               "NatGatewayId" : { "Ref" : "natgwa" }
-            }
         },
         "rtprivateb" : {
             "Type" : "AWS::EC2::RouteTable",
@@ -418,30 +364,12 @@
                "Tags" : [  {"Key" : "Name", "Value" : "RT-PrivateB"} ]
             }  
         },
-        "rtprivatebdefault" : {
-            "Type" : "AWS::EC2::Route",
-            "DependsOn" : "igwvpc1",
-            "Properties" : {
-               "RouteTableId" : { "Ref" : "rtprivateb" },
-               "DestinationCidrBlock" : "0.0.0.0/0",
-               "NatGatewayId" : { "Ref" : "natgwb" }
-            }
-        },
         "rtprivatec" : {
             "Type" : "AWS::EC2::RouteTable",
             "Properties" : {
                "VpcId" : {"Ref" : "vpc1"},
                "Tags" : [  {"Key" : "Name", "Value" : "RT-PrivateC"} ]
             }  
-        },
-        "rtprivatecdefault" : {
-            "Type" : "AWS::EC2::Route",
-            "DependsOn" : "igwvpc1",
-            "Properties" : {
-               "RouteTableId" : { "Ref" : "rtprivatec" },
-               "DestinationCidrBlock" : "0.0.0.0/0",
-               "NatGatewayId" : { "Ref" : "natgwc" }
-            }
         },
         "rtprivatea3" : {
             "Type" : "AWS::EC2::SubnetRouteTableAssociation",
@@ -490,6 +418,9 @@
             "Properties" : {
                 "ImageId" : {"Ref" : "LatestAmiId"},
                 "KeyName" : {"Ref" : "KeyName"},
+                "IamInstanceProfile" : {
+                    "Ref" : "s3instanceprofile"
+                },
                 "NetworkInterfaces" : [ {
                     "AssociatePublicIpAddress": "true",
                     "DeviceIndex": "0",
@@ -514,35 +445,61 @@
                 "Tags" : [ {"Key" : "Name", "Value" : "EC2-1"} ]
             }
         },
-        "ec22" : {
-            "Type" : "AWS::EC2::Instance",
+        "s3instanceprofile" : {
+            "Type" : "AWS::IAM::InstanceProfile",
             "Properties" : {
-                "InstanceType" : "t2.nano",
-                "ImageId" : {"Ref" : "LatestAmiId"},
-                "KeyName" : {"Ref" : "KeyName"},
-                "NetworkInterfaces" : [ {
-                    "AssociatePublicIpAddress": "false",
-                    "DeviceIndex": "0",
-                    "GroupSet": [{ "Ref" : "sginternal" }],
-                    "SubnetId": { "Ref" : "vpc1snB3" }
-                }],
-                "Tags" : [ {"Key" : "Name", "Value" : "EC2-2"} ]
+              "Path" : "/",
+              "Roles" : [
+                {
+                  "Ref" : "S3Role"
+                }
+              ]
             }
         },
-        "ec23" : {
-            "Type" : "AWS::EC2::Instance",
+        "S3Policy" : {
+            "Type" : "AWS::IAM::Policy",
             "Properties" : {
-                "InstanceType" : "t2.nano",
-                "ImageId" : {"Ref" : "LatestAmiId"},
-                "KeyName" : {"Ref" : "KeyName"},
-                "NetworkInterfaces" : [ {
-                    "AssociatePublicIpAddress": "false",
-                    "DeviceIndex": "0",
-                    "GroupSet": [{ "Ref" : "sginternal" }],
-                    "SubnetId": { "Ref" : "vpc1snB3" }
-                }],
-                "Tags" : [ {"Key" : "Name", "Value" : "EC2-3"} ]
+                "PolicyName" : "ListS3BucketsPolicy",
+                "PolicyDocument" : {
+                    "Statement" : [{
+                        "Effect" : "Allow",
+                        "Action" : [
+                            "s3:*"
+                        ],
+                        "Resource" : "*"
+                    }]
+                },
+                "Roles" : [{
+                    "Ref" : "S3Role"
+                }]
             }
-        }
+        },
+        "S3Role" : {
+            "Type" : "AWS::IAM::Role",
+            "Properties" : {
+                "AssumeRolePolicyDocument": {
+                    "Version" : "2012-10-17",
+                    "Statement" : [{
+                        "Effect" : "Allow",
+                        "Principal" : {
+                            "Service" : ["ec2.amazonaws.com"]
+                        },
+                        "Action" : [ "sts:AssumeRole" ]
+                    }]
+                },
+                "Path" : "/"
+            } 
+        },
+        "s3bucket" : {
+            "Type" : "AWS::S3::Bucket"
+        },
+        "S3Endpoint" : {
+            "Type" : "AWS::EC2::VPCEndpoint",
+            "Properties" : {
+              "RouteTableIds" : [ {"Ref" : "rtprivatea"}, {"Ref" : "rtprivateb"}, {"Ref" : "rtprivatec"} ],
+              "ServiceName" : { "Fn::Join": [ "", [ "com.amazonaws.", { "Ref": "AWS::Region" }, ".s3" ] ] },
+              "VpcId" : {"Ref" : "vpc1"}
+            }
+          }
     }
 }

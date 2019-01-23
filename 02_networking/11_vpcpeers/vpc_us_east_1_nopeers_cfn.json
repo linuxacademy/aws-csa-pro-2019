@@ -350,49 +350,27 @@
                 }
             }
         },
-        "eipa" : {
-            "Type" : "AWS::EC2::EIP",
-            "DependsOn" : "igwvpc1attachment",
+        "sginternal3" : {
+            "Type" : "AWS::EC2::SecurityGroup",
             "Properties" : {
-              "Domain" : "vpc"
+                "GroupName" : "SG-INTERNAL2",
+                "GroupDescription" : "SG-INTERNAL2",
+                "Tags" :  [ {"Key" : "Name", "Value" : "SG-INTERNAL2"} ],
+                "VpcId" : {"Ref" : "vpc3"}
             }
         },
-        "natgwa" : {
-            "Type" : "AWS::EC2::NatGateway",
-            "Properties" : {
-              "AllocationId" : { "Fn::GetAtt" : ["eipa", "AllocationId"]},
-              "SubnetId" : {"Ref" : "vpc1snA1" },
-              "Tags" : [ {"Key" : "Name", "Value" : "NATGWA"} ]
-            }
-        },
-        "eipb" : {
-            "Type" : "AWS::EC2::EIP",
-            "DependsOn" : "igwvpc1attachment",
-            "Properties" : {
-              "Domain" : "vpc"
-            }
-        },
-        "natgwb" : {
-            "Type" : "AWS::EC2::NatGateway",
-            "Properties" : {
-              "AllocationId" : { "Fn::GetAtt" : ["eipb", "AllocationId"]},
-              "SubnetId" : {"Ref" : "vpc1snB1" },
-              "Tags" : [ {"Key" : "Name", "Value" : "NATGWB"} ]
-            }
-        },
-        "eipc" : {
-            "Type" : "AWS::EC2::EIP",
-            "DependsOn" : "igwvpc1attachment",
-            "Properties" : {
-              "Domain" : "vpc"
-            }
-        },
-        "natgwc" : {
-            "Type" : "AWS::EC2::NatGateway",
-            "Properties" : {
-              "AllocationId" : { "Fn::GetAtt" : ["eipc", "AllocationId"]},
-              "SubnetId" : {"Ref" : "vpc1snC1" },
-              "Tags" : [ {"Key" : "Name", "Value" : "NATGWC"} ]
+        "sginternalselfref3" : {
+            "Type": "AWS::EC2::SecurityGroupIngress",
+            "Properties": {
+                "GroupId": {
+                    "Ref": "sginternal3"
+                },
+                "IpProtocol": -1,
+                "FromPort": -1,
+                "ToPort": -1,
+                "SourceSecurityGroupId": {
+                    "Ref": "sginternal3"
+                }
             }
         },
         "rtprivatea" : {
@@ -402,15 +380,6 @@
                "Tags" : [  {"Key" : "Name", "Value" : "RT-PrivateA"} ]
             }  
         },
-        "rtprivateadefault" : {
-            "Type" : "AWS::EC2::Route",
-            "DependsOn" : "igwvpc1",
-            "Properties" : {
-               "RouteTableId" : { "Ref" : "rtprivatea" },
-               "DestinationCidrBlock" : "0.0.0.0/0",
-               "NatGatewayId" : { "Ref" : "natgwa" }
-            }
-        },
         "rtprivateb" : {
             "Type" : "AWS::EC2::RouteTable",
             "Properties" : {
@@ -418,30 +387,12 @@
                "Tags" : [  {"Key" : "Name", "Value" : "RT-PrivateB"} ]
             }  
         },
-        "rtprivatebdefault" : {
-            "Type" : "AWS::EC2::Route",
-            "DependsOn" : "igwvpc1",
-            "Properties" : {
-               "RouteTableId" : { "Ref" : "rtprivateb" },
-               "DestinationCidrBlock" : "0.0.0.0/0",
-               "NatGatewayId" : { "Ref" : "natgwb" }
-            }
-        },
         "rtprivatec" : {
             "Type" : "AWS::EC2::RouteTable",
             "Properties" : {
                "VpcId" : {"Ref" : "vpc1"},
                "Tags" : [  {"Key" : "Name", "Value" : "RT-PrivateC"} ]
             }  
-        },
-        "rtprivatecdefault" : {
-            "Type" : "AWS::EC2::Route",
-            "DependsOn" : "igwvpc1",
-            "Properties" : {
-               "RouteTableId" : { "Ref" : "rtprivatec" },
-               "DestinationCidrBlock" : "0.0.0.0/0",
-               "NatGatewayId" : { "Ref" : "natgwc" }
-            }
         },
         "rtprivatea3" : {
             "Type" : "AWS::EC2::SubnetRouteTableAssociation",
@@ -488,6 +439,7 @@
         "bastion" : {
             "Type" : "AWS::EC2::Instance",
             "Properties" : {
+                "InstanceType" : "t2.nano",
                 "ImageId" : {"Ref" : "LatestAmiId"},
                 "KeyName" : {"Ref" : "KeyName"},
                 "NetworkInterfaces" : [ {
@@ -514,7 +466,7 @@
                 "Tags" : [ {"Key" : "Name", "Value" : "EC2-1"} ]
             }
         },
-        "ec22" : {
+        "ec25" : {
             "Type" : "AWS::EC2::Instance",
             "Properties" : {
                 "InstanceType" : "t2.nano",
@@ -523,25 +475,10 @@
                 "NetworkInterfaces" : [ {
                     "AssociatePublicIpAddress": "false",
                     "DeviceIndex": "0",
-                    "GroupSet": [{ "Ref" : "sginternal" }],
-                    "SubnetId": { "Ref" : "vpc1snB3" }
+                    "GroupSet": [{ "Ref" : "sginternal3" }],
+                    "SubnetId": { "Ref" : "vpc3snA2" }
                 }],
-                "Tags" : [ {"Key" : "Name", "Value" : "EC2-2"} ]
-            }
-        },
-        "ec23" : {
-            "Type" : "AWS::EC2::Instance",
-            "Properties" : {
-                "InstanceType" : "t2.nano",
-                "ImageId" : {"Ref" : "LatestAmiId"},
-                "KeyName" : {"Ref" : "KeyName"},
-                "NetworkInterfaces" : [ {
-                    "AssociatePublicIpAddress": "false",
-                    "DeviceIndex": "0",
-                    "GroupSet": [{ "Ref" : "sginternal" }],
-                    "SubnetId": { "Ref" : "vpc1snB3" }
-                }],
-                "Tags" : [ {"Key" : "Name", "Value" : "EC2-3"} ]
+                "Tags" : [ {"Key" : "Name", "Value" : "EC2-5"} ]
             }
         }
     }
