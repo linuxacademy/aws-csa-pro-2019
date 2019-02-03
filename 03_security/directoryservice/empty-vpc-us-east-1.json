@@ -1,0 +1,417 @@
+{
+    "Parameters" : {
+        "KeyName": {
+            "Description" : "Name of an existing EC2 KeyPair - YOU NEED TO CREATE THIS IN EC2->Network&Security->Key Pairs",
+            "Type": "AWS::EC2::KeyPair::KeyName"
+        },
+        "LatestAmiId" : {
+            "Type" : "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+            "Default" : "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+        }
+    },
+    "Resources" : {
+        "vpc1" : {
+            "Type" : "AWS::EC2::VPC",
+            "Properties" : { 
+                "CidrBlock" : "10.10.0.0/16",
+                "EnableDnsSupport" : true,
+                "EnableDnsHostnames" : true,
+                "InstanceTenancy" : "default",
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1"} ]
+            }
+        },
+        "vpc3" : {
+            "Type" : "AWS::EC2::VPC",
+            "Properties" : { 
+                "CidrBlock" : "10.11.0.0/16",
+                "EnableDnsSupport" : true,
+                "EnableDnsHostnames" : true,
+                "InstanceTenancy" : "default",
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc3"} ]
+            }
+        },
+        "vpc1snA1" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_A1"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "0",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.0.0/20"
+            }
+        },
+        "vpc1snA2" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_A2"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "0",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.64.0/20"
+            }
+        },
+        "vpc1snA3" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_A3"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "0",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.128.0/20"
+            }
+        },
+        "vpc1snA4" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_A4"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "0",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.192.0/20"
+            }
+        },
+        "vpc1snB1" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_B1"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "1",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.16.0/20"
+            }
+        },
+        "vpc1snB2" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_B2"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "1",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.80.0/20"
+            }
+        },
+        "vpc1snB3" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_B3"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "1",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.144.0/20"
+            }
+        },
+        "vpc1snB4" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_B4"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "1",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.208.0/20"
+            }
+        },
+        "vpc1snC1" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_C1"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "2",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.32.0/20"
+            }
+        },
+        "vpc1snC2" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_C2"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "2",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.96.0/20"
+            }
+        },
+        "vpc1snC3" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_C3"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "2",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.160.0/20"
+            }
+        },
+        "vpc1snC4" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc1"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc1_sn_C4"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "2",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.10.224.0/20"
+            }
+        },
+        "vpc3snA1" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc3"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc3_sn_A1"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "0",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.11.0.0/20"
+            }
+        },
+        "vpc3snA2" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : { 
+                "VpcId" : {"Ref" : "vpc3"},
+                "Tags" : [ {"Key" : "Name", "Value" : "vpc3_sn_A2"} ],
+                "AvailabilityZone" : {
+                    "Fn::Select" : [
+                        "0",
+                        {
+                            "Fn::GetAZs" : ""
+                        }
+                    ]
+                },
+                "CidrBlock" : "10.11.16.0/20"
+            }
+        },
+        "igwvpc1" : {
+            "Type" : "AWS::EC2::InternetGateway",
+            "DependsOn" : "vpc1",
+            "Properties" : {
+               "Tags" : [ {"Key" : "Name", "Value" : "IGW-VPC1"} ]
+            }   
+        },
+        "igwvpc1attachment" : {
+            "DependsOn" : "igwvpc1",
+            "Type" : "AWS::EC2::VPCGatewayAttachment",
+            "Properties" : {
+               "InternetGatewayId" : {"Ref" : "igwvpc1"},
+               "VpcId" : {"Ref" : "vpc1"}
+            }
+        },
+        "rtpublic" : {
+            "Type" : "AWS::EC2::RouteTable",
+            "Properties" : {
+               "VpcId" : {"Ref" : "vpc1"},
+               "Tags" : [  {"Key" : "Name", "Value" : "RT-Public"} ]
+            }  
+        },
+        "rtpublicdefault" : {
+            "Type" : "AWS::EC2::Route",
+            "DependsOn" : "igwvpc1attachment",
+            "Properties" : {
+               "RouteTableId" : { "Ref" : "rtpublic" },
+               "DestinationCidrBlock" : "0.0.0.0/0",
+               "GatewayId" : { "Ref" : "igwvpc1" }
+            }
+        },
+        "rtpublicpubA" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {"Ref" : "rtpublic" },
+                "SubnetId" : {"Ref" : "vpc1snA1" }
+              }
+        },
+        "rtpublicpubB" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {"Ref" : "rtpublic" },
+                "SubnetId" : {"Ref" : "vpc1snB1" }
+              }
+        },
+        "rtpublicpubC" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {"Ref" : "rtpublic" },
+                "SubnetId" : {"Ref" : "vpc1snC1" }
+              }
+        },
+        "sgbastion" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupName" : "SG-BASTION",
+                "GroupDescription" : "SG-BASTION",
+                "SecurityGroupIngress" : [{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : 22,
+                    "ToPort" : 22,
+                    "CidrIp" : "0.0.0.0/0"
+                }],
+                "Tags" :  [ {"Key" : "Name", "Value" : "SG-BASTION"} ],
+                "VpcId" : {"Ref" : "vpc1"}
+            }
+        },
+        "sginternal" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupName" : "SG-INTERNAL",
+                "GroupDescription" : "SG-INTERNAL",
+                "SecurityGroupIngress" : [{
+                    "IpProtocol" : "tcp",
+                    "FromPort" : 22,
+                    "ToPort" : 22,
+                    "SourceSecurityGroupId" : {"Ref" : "sgbastion"}
+                }],
+                "Tags" :  [ {"Key" : "Name", "Value" : "SG-INTERNAL"} ],
+                "VpcId" : {"Ref" : "vpc1"}
+            }
+        },
+        "sginternalselfref" : {
+            "Type": "AWS::EC2::SecurityGroupIngress",
+            "Properties": {
+                "GroupId": {
+                    "Ref": "sginternal"
+                },
+                "IpProtocol": -1,
+                "FromPort": -1,
+                "ToPort": -1,
+                "SourceSecurityGroupId": {
+                    "Ref": "sginternal"
+                }
+            }
+        },
+        "rtprivatea" : {
+            "Type" : "AWS::EC2::RouteTable",
+            "Properties" : {
+               "VpcId" : {"Ref" : "vpc1"},
+               "Tags" : [  {"Key" : "Name", "Value" : "RT-PrivateA"} ]
+            }  
+        },
+        "rtprivateb" : {
+            "Type" : "AWS::EC2::RouteTable",
+            "Properties" : {
+               "VpcId" : {"Ref" : "vpc1"},
+               "Tags" : [  {"Key" : "Name", "Value" : "RT-PrivateB"} ]
+            }  
+        },
+        "rtprivatec" : {
+            "Type" : "AWS::EC2::RouteTable",
+            "Properties" : {
+               "VpcId" : {"Ref" : "vpc1"},
+               "Tags" : [  {"Key" : "Name", "Value" : "RT-PrivateC"} ]
+            }  
+        },
+        "rtprivatea3" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {"Ref" : "rtprivatea" },
+                "SubnetId" : {"Ref" : "vpc1snA3" }
+              }
+        },
+        "rtprivatea4" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {"Ref" : "rtprivatea" },
+                "SubnetId" : {"Ref" : "vpc1snA4" }
+              }
+        },
+        "rtprivateb3" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {"Ref" : "rtprivateb" },
+                "SubnetId" : {"Ref" : "vpc1snB3" }
+              }
+        },
+        "rtprivateb4" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {"Ref" : "rtprivateb" },
+                "SubnetId" : {"Ref" : "vpc1snB4" }
+              }
+        },
+        "rtprivatec3" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {"Ref" : "rtprivatec" },
+                "SubnetId" : {"Ref" : "vpc1snC3" }
+              }
+        },
+        "rtprivatec4" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {"Ref" : "rtprivatec" },
+                "SubnetId" : {"Ref" : "vpc1snC4" }
+            }
+        }
+    }
+}

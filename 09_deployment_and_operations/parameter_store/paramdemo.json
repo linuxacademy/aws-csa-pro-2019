@@ -1,0 +1,161 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Description" : "SSM Demo EC2 and Lambda",
+
+  "Parameters" : {
+
+    "KeyName": {
+      "Description" : "Name of an existing EC2 KeyPair to enable SSH access to the instances",
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "ConstraintDescription" : "must be the name of an existing EC2 KeyPair.",
+      "Default" : "SAPRO"
+    },
+
+    "LatestAMI" : {
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+      "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+    },
+
+    "InstanceType" : {
+      "Description" : "EC2 instance type",
+      "Type" : "String",
+      "Default" : "t2.small",
+      "AllowedValues" : [ "t1.micro", "t2.nano", "t2.micro", "t2.small", "t2.medium", "t2.large", "m1.small", "m1.medium", "m1.large", "m1.xlarge", "m2.xlarge", "m2.2xlarge", "m2.4xlarge", "m3.medium", "m3.large", "m3.xlarge", "m3.2xlarge", "m4.large", "m4.xlarge", "m4.2xlarge", "m4.4xlarge", "m4.10xlarge", "c1.medium", "c1.xlarge", "c3.large", "c3.xlarge", "c3.2xlarge", "c3.4xlarge", "c3.8xlarge", "c4.large", "c4.xlarge", "c4.2xlarge", "c4.4xlarge", "c4.8xlarge", "g2.2xlarge", "g2.8xlarge", "r3.large", "r3.xlarge", "r3.2xlarge", "r3.4xlarge", "r3.8xlarge", "i2.xlarge", "i2.2xlarge", "i2.4xlarge", "i2.8xlarge", "d2.xlarge", "d2.2xlarge", "d2.4xlarge", "d2.8xlarge", "hi1.4xlarge", "hs1.8xlarge", "cr1.8xlarge", "cc2.8xlarge", "cg1.4xlarge"],
+      "ConstraintDescription" : "must be a valid EC2 instance type."
+    },
+
+    "SSHLocation": {
+      "Description": "The IP address range that can be used to SSH to the EC2 instances",
+      "Type": "String",
+      "MinLength": "9",
+      "MaxLength": "18",
+      "Default": "0.0.0.0/0",
+      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+      "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
+    }
+  },
+
+  "Resources" : {
+    "SecurityGroup" : {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "Enable HTTP access via port 80 locked down to the load balancer + SSH access",
+        "SecurityGroupIngress" : [
+          {"IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "CidrIp" : "0.0.0.0/0"},
+          {"IpProtocol" : "tcp", "FromPort" : "22", "ToPort" : "22", "CidrIp" : { "Ref" : "SSHLocation"}}
+        ],
+        "VpcId" : { "Fn::ImportValue" : "vpc1" }
+      }
+    },
+    "EC2": {
+      "Type" : "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId" : {"Ref" : "LatestAMI"},
+        "InstanceType"   : { "Ref" : "InstanceType" },
+        "SubnetId" : { "Fn::ImportValue" : "vpc1snA1" },
+        "SecurityGroupIds" : [ {"Ref" : "SecurityGroup"} ],
+        "KeyName"        : { "Ref" : "KeyName" }
+      }
+    },
+    "ssminstanceprofile" : {
+      "Type" : "AWS::IAM::InstanceProfile",
+      "Properties" : {
+        "Path" : "/",
+        "Roles" : [
+          {
+            "Ref" : "ec2ssmrole"
+          }
+        ]
+      }
+    },
+    "ssmpolicy" : {
+      "Type" : "AWS::IAM::Policy",
+      "Properties" : {
+          "PolicyName" : "allowssmuse",
+          "PolicyDocument" : {
+              "Statement" : [{
+                  "Effect" : "Allow",
+                  "Action" : [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents",
+                    "ssm:GetParameter*",
+                    "ssm:GetParametersByPath"
+                  ],
+                  "Resource" : "*"
+              }]
+          },
+          "Roles" : [{ "Ref" : "ec2ssmrole"}, { "Ref" : "lambdassmrole"}]
+      }
+    },
+    "ec2ssmrole" : {
+      "Type" : "AWS::IAM::Role",
+      "Properties" : {
+          "AssumeRolePolicyDocument": {
+              "Version" : "2012-10-17",
+              "Statement" : [{
+                  "Effect" : "Allow",
+                  "Principal" : {
+                      "Service" : ["ec2.amazonaws.com"]
+                  },
+                  "Action" : [ "sts:AssumeRole" ]
+              }]
+          },
+          "Path" : "/"
+      } 
+    },
+    "lambdassmrole" : {
+      "Type" : "AWS::IAM::Role",
+      "Properties" : {
+          "AssumeRolePolicyDocument": {
+              "Version" : "2012-10-17",
+              "Statement" : [{
+                  "Effect" : "Allow",
+                  "Principal" : {
+                      "Service" : ["lambda.amazonaws.com"]
+                  },
+                  "Action" : [ "sts:AssumeRole" ]
+              }]
+          },
+          "Path" : "/"
+      } 
+    },
+    "lambda" : {
+      "Type": "AWS::Lambda::Function",
+      "Properties" : {
+        "FunctionName" : "ssmlambda",
+        "Description" : "Demo of SSM Param Store",
+        "Handler" : "index.lambda_handler",
+        "Runtime" : "python3.6",
+        "Role" : {"Fn::GetAtt" : ["lambdassmrole", "Arn"]},
+        "Environment" : {
+          "Variables" : {
+            "env" : "",
+            "app_config_path" : ""
+          }
+        },
+        "Code" : {
+          "ZipFile" : {
+            "Fn::Join" : ["\n", [
+              "client = boto3.client('ssm')",
+              "env = os.environ['ENV']",
+              "app_config_path = os.environ['APP_CONFIG_PATH']",
+              "full_config_path = '/' + env + '/' + app_config_path",
+              "def lambda_handler(event, context):",
+              "\tglobal app",
+              "\tprint(\"Loading config and creating new MyApp...\")",
+              "\tprint (\"Config Path:\" + full_config_path)",
+              "\tparam_details = client.get_parameters_by_path(",
+              "\t\tPath=full_config_path,",
+              "\t\tRecursive=True,",
+              "\t\tWithDecryption=True",
+              "\t\t)",
+              "\tprint (param_details)"
+            ]]
+          }
+        }
+      }
+    } 
+  }
+}
