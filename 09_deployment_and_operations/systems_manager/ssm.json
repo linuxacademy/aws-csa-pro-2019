@@ -72,26 +72,6 @@
         ]
       }
     },
-    "ssmpolicy" : {
-      "Type" : "AWS::IAM::Policy",
-      "Properties" : {
-          "PolicyName" : "allowssmuse",
-          "PolicyDocument" : {
-              "Statement" : [{
-                  "Effect" : "Allow",
-                  "Action" : [
-                    "logs:CreateLogGroup",
-                    "logs:CreateLogStream",
-                    "logs:PutLogEvents",
-                    "ssm:GetParameter*",
-                    "ssm:GetParametersByPath"
-                  ],
-                  "Resource" : "*"
-              }]
-          },
-          "Roles" : [{ "Ref" : "ec2ssmrole"}, { "Ref" : "lambdassmrole"}]
-      }
-    },
     "ec2ssmrole" : {
       "Type" : "AWS::IAM::Role",
       "Properties" : {
@@ -105,61 +85,11 @@
                   "Action" : [ "sts:AssumeRole" ]
               }]
           },
+          "ManagedPolicyArns": [
+            "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
+          ],
           "Path" : "/"
       } 
-    },
-    "lambdassmrole" : {
-      "Type" : "AWS::IAM::Role",
-      "Properties" : {
-          "AssumeRolePolicyDocument": {
-              "Version" : "2012-10-17",
-              "Statement" : [{
-                  "Effect" : "Allow",
-                  "Principal" : {
-                      "Service" : ["lambda.amazonaws.com"]
-                  },
-                  "Action" : [ "sts:AssumeRole" ]
-              }]
-          },
-          "Path" : "/"
-      } 
-    },
-    "lambda" : {
-      "Type": "AWS::Lambda::Function",
-      "Properties" : {
-        "FunctionName" : "ssmlambda",
-        "Description" : "Demo of SSM Param Store",
-        "Handler" : "index.lambda_handler",
-        "Runtime" : "python3.6",
-        "Role" : {"Fn::GetAtt" : ["lambdassmrole", "Arn"]},
-        "Environment" : {
-          "Variables" : {
-            "env" : "",
-            "app_config_path" : ""
-          }
-        },
-        "Code" : {
-          "ZipFile" : {
-            "Fn::Join" : ["\n", [
-              "import os, traceback, json, configparser, boto3",
-              "client = boto3.client('ssm')",
-              "env = os.environ['env']",
-              "app_config_path = os.environ['app_config_path']",
-              "full_config_path = '/' + env + '/' + app_config_path",
-              "def lambda_handler(event, context):",
-              "\tglobal app",
-              "\tprint(\"Loading config and creating new MyApp...\")",
-              "\tprint (\"Config Path:\" + full_config_path)",
-              "\tparam_details = client.get_parameters_by_path(",
-              "\t\tPath=full_config_path,",
-              "\t\tRecursive=True,",
-              "\t\tWithDecryption=True",
-              "\t\t)",
-              "\tprint (param_details)"
-            ]]
-          }
-        }
-      }
-    } 
+    }
   }
 }
