@@ -1,0 +1,34 @@
+aws kms create-key --description "SAPRO" --region us-east-1
+
+aws kms create-alias --target-key-id XXX --alias-name "alias/saprokey" --region us-east-1
+
+
+aws kms generate-data-key --key-id alias/saprokey --key-spec AES_256 --region us-east-1
+
+
+echo "CIPHERTEXT_FROM_PREV_COMMAND"  > datakey_ciphertext_base64.txt
+
+echo "PLAINTEXT_FROM_PREV_COMMAND" > datakey_plaintext_base64.txt
+
+cat datakey_plaintext_base64.txt | base64 --decode > datakey_plaintext_decoded.txt
+
+echo "Pinehead is amazing"  | openssl enc -e -aes256 -k fileb://home/ec2-user/datakey_plaintext_decoded.txt > ~/topsecret.txt
+
+
+cat topsecret.txt
+
+
+rm datakey_plaintext_*
+
+
+cat datakey_ciphertext_base64.txt | base64 --decode > ./datakey_ciphertext_decoded.txt
+
+
+aws kms decrypt --ciphertext-blob fileb:///home/ec2-user/datakey_ciphertext_decoded.txt --region us-east-1
+
+
+echo "PLAINTEXT_FROM_PREV_COMMAND" > ./datakey_plaintext_base64.txt
+
+cat ./datakey_plaintext_base64.txt | base64 --decode > ./datakey_plaintext_decoded.txt
+
+cat ./topsecret.txt | openssl enc -d -aes256 -k fileb://home/ec2-user/datakey_plaintext_decoded.txt
