@@ -416,6 +416,7 @@
         "bastion" : {
             "Type" : "AWS::EC2::Instance",
             "Properties" : {
+                "InstanceType" : "t3.nano",
                 "ImageId" : {"Ref" : "LatestAmiId"},
                 "KeyName" : {"Ref" : "KeyName"},
                 "IamInstanceProfile" : {
@@ -433,7 +434,7 @@
         "ec21" : {
             "Type" : "AWS::EC2::Instance",
             "Properties" : {
-                "InstanceType" : "t2.nano",
+                "InstanceType" : "t3.nano",
                 "ImageId" : {"Ref" : "LatestAmiId"},
                 "KeyName" : {"Ref" : "KeyName"},
                 "IamInstanceProfile" : {
